@@ -36,7 +36,7 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 			 * The first one is to hook into all possible and available actions
 			 * and the second one is to register the call you want to set up with it.
 			 */
-			add_action( 'wp', array( $this, 'add_webhook_actions' ), 20, 3 );
+			add_action( 'wpwhpro/webhooks/add_webhooks_actions', array( $this, 'add_webhook_actions' ), 20, 3 );
 			add_filter( 'wpwhpro/webhooks/get_webhooks_actions', array( $this, 'add_webhook_actions_content' ), 20 );
 
 			/*
