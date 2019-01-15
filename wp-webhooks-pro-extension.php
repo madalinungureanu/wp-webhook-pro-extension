@@ -175,8 +175,19 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 			$do_action   = isset( $_REQUEST['do_action'] ) ? sanitize_email( $_REQUEST['do_action'] ) : '';
 			$send_email  = ( isset( $_REQUEST['send_email'] ) && $_REQUEST['send_email'] == 'yes' ) ? 'yes' : 'no';
 			$user        = '';
+			$return_args = array(
+                'success' => false
+            );
 
 			// DO YOUR ACTION HERE...
+
+            if( 'this wehook succeeds, ' == 'then do that!' ){
+	            $return_args['msg'] = WPWHPRO()->helpers->translate("User successfully deleted.", 'action-delete-user-success' );
+            } else {
+	            $return_args['msg'] = WPWHPRO()->helpers->translate("Error deleting user.", 'action-delete-user-success' );
+            }
+
+			WPWHPRO()->webhook->echo_json( $return_args );
 
 			die();
 		}
