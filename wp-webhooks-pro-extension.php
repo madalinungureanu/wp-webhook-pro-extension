@@ -86,6 +86,17 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 		public function add_webhook_actions( $action, $webhook, $api_key ){
 
 			$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
+			$default_return = array(
+				'success' => false
+			);
+
+			if( empty( $active_webhooks ) || empty( $active_webhooks['actions'] ) ){
+				$default_return['msg'] = WPWHPRO()->helpers->translate("You currently don't have any actions available.", 'action-add-webhook-actions' );
+
+				WPWHPRO()->webhook->echo_json( $default_return );
+				die();
+			}
+
 			$available_triggers = $active_webhooks['actions'];
 
 			switch( $action ){
@@ -100,8 +111,10 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 					break;
 			}
 
-			//always die here
-			wp_die();
+			$default_return['msg'] = WPWHPRO()->helpers->translate("It looks like your current action is deactivated or it does not have any action function.", 'action-add-webhook-actions' );
+
+			WPWHPRO()->webhook->echo_json( $default_return );
+			die();
 		}
 
 		/*
