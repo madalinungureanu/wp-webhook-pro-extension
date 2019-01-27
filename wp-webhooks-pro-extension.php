@@ -297,11 +297,20 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 
 	}
 
-	/*
-	 * Init the extension by calling it here.
-	 * Since we don't output anything by default,
-	 * you can call the class that way.
-	 */
-	new WP_Webhooks_Pro_Extensions();
+	// Make sure we load the extension after main plugin is loaded
+	if( defined( 'WPWHPRO_SETUP' ) ){
+		wpwhpro_load_post_by_email();
+	} else {
+		add_action( 'wpwhpro_plugin_loaded', 'wpwhpro_load_extension' );
+	}
+
+	function wpwhpro_load_extension(){
+		/*
+		 * Init the extension by calling it here.
+		 * Since we don't output anything by default,
+		 * you can call the class that way.
+		 */
+		new WP_Webhooks_Pro_Extensions();
+	}
 
 }
