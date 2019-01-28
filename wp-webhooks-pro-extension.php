@@ -167,15 +167,15 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 		 */
 		function action_delete_user() {
 
-		    //This is how defined parameters look - you can use the exact same structure and catch the data you need
-			$user_id     = isset( $_REQUEST['user_id'] )    ? intval( $_REQUEST['user_id'] ) : '';
-			$user_email  = isset( $_REQUEST['user_email'] ) ? sanitize_email( $_REQUEST['user_email'] ) : '';
-			$do_action   = isset( $_REQUEST['do_action'] ) ? sanitize_email( $_REQUEST['do_action'] ) : '';
-			$send_email  = ( isset( $_REQUEST['send_email'] ) && $_REQUEST['send_email'] == 'yes' ) ? 'yes' : 'no';
-			$user        = '';
+			$response_body = WPWHPRO()->helpers->get_response_body();
 			$return_args = array(
-                'success' => false
-            );
+				'success' => false
+			);
+
+		    //This is how defined parameters look - you can use the exact same structure and catch the data you need
+			$user_id     = intval( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_id' ) );
+			$user_email  = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_email' );
+			$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
 
 			// DO YOUR ACTION HERE...
 
