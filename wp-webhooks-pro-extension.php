@@ -87,7 +87,7 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 
 			$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
 
-			$available_triggers = $active_webhooks['actions'];
+			$available_actions = $active_webhooks['actions'];
 
 			switch( $action ){
 				case 'delete_user':
@@ -95,7 +95,7 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 					 * We include this isset test to save performance for the whole site.
 					 * It is not a requirement, but we highly suggest it.
 					 */
-					if( isset( $available_triggers['delete_user'] ) ){
+					if( isset( $available_actions['delete_user'] ) ){
 						$this->action_delete_user();
 					}
 					break;
@@ -135,6 +135,26 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 				'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-delete-user-content' ) )
 			);
 
+			$returns = array(
+				'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-delete-user-content' ) ),
+				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) User related data as an array. We return the user id with the key "user_id" and the user data with the key "user_data". E.g. array( \'data\' => array(...) )', 'action-delete-user-content' ) ),
+				'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-delete-user-content' ) ),
+			);
+
+			ob_start();
+			?>
+            <pre>
+$return_args = array(
+    'success' => false,
+    'data' => array(
+        'user_id' => 0,
+        'user_data' => array()
+    )
+);
+        </pre>
+			<?php
+			$returns_code = ob_get_clean();
+
 			ob_start();
 			?>
                 <p>
@@ -146,6 +166,8 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 			return array(
 				'action'            => 'demo_delete_user', //required
 				'parameter'         => $parameter,
+				'returns'           => $returns,
+				'returns_code'      => $returns_code,
 				'short_description' => WPWHPRO()->helpers->translate( 'This is the short description of your webhook action.', 'action-create-user-content' ),
 				'description'       => $description
 			);
@@ -249,6 +271,7 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 				'trigger' => 'demo_create_user',
 				'name'  => WPWHPRO()->helpers->translate( 'Demo Send Data On Register', 'trigger-create-user-content' ),
 				'parameter' => $parameter,
+				'returns_code'      => WPWHPRO()->helpers->display_var( $this->ironikus_send_demo_user_create( array(), '', '' ) ), //Display some response code within the frontend
 				'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user registered.', 'trigger-create-user-content' ),
 				'description' => $description,
 				'callback' => 'test_user_create'
