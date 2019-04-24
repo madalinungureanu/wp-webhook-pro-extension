@@ -266,11 +266,31 @@ $return_args = array(
             <p><?php echo WPWHPRO()->helpers->translate( 'To check the webhook response on a demo request, just open your browser console and you will see the object.', 'trigger-create-user-content' ); ?></p>
 			<?php
 			$description = ob_get_clean();
+			
+			$settings = array(
+				'load_default_settings' => true,
+				'data' => array(
+					'wpwhpro_post_create_user_on_certain_id' => array(
+						'id'          => 'wpwhpro_post_create_user_on_certain_id',
+						'type'        => 'select',
+						'multiple'    => true,
+						'choices'      => array(
+                            'name_1' => 'Label 1',
+                            'name_2' => 'Label 2',
+                        ),
+						'label'       => WPWHPRO()->helpers->translate('This is the settings label', 'trigger-create-user-content'),
+						'placeholder' => '',
+						'required'    => false,
+						'description' => WPWHPRO()->helpers->translate('Include the description for your single settings item here.', 'trigger-create-user-content-tip')
+					),
+				)
+			);
 
 			return array(
 				'trigger' => 'demo_create_user',
 				'name'  => WPWHPRO()->helpers->translate( 'Demo Send Data On Register', 'trigger-create-user-content' ),
 				'parameter' => $parameter,
+				'settings'          => $settings,
 				'returns_code'      => WPWHPRO()->helpers->display_var( $this->ironikus_send_demo_user_create( array(), '', '' ) ), //Display some response code within the frontend
 				'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user registered.', 'trigger-create-user-content' ),
 				'description' => $description,
