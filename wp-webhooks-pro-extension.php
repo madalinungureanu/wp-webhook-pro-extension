@@ -87,15 +87,15 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 
 			$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
 
-			$available_actions = $active_webhooks['actions'];
+			$available_triggers = $active_webhooks['actions'];
 
 			switch( $action ){
-				case 'delete_user':
+				case 'demo_delete_user':
 					/*
 					 * We include this isset test to save performance for the whole site.
 					 * It is not a requirement, but we highly suggest it.
 					 */
-					if( isset( $available_actions['delete_user'] ) ){
+					if( isset( $available_triggers['demo_delete_user'] ) ){
 						$this->action_delete_user();
 					}
 					break;
@@ -207,7 +207,7 @@ $return_args = array(
 	            $return_args['msg'] = WPWHPRO()->helpers->translate("Error deleting user.", 'action-delete-user-success' );
             }
 
-			WPWHPRO()->webhook->echo_json( $return_args );
+			WPWHPRO()->webhook->echo_response_data( $return_args );
 
 			die();
 		}
