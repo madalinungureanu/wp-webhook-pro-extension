@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WP Webhooks Pro Extension
+ * Plugin Name: WP Webhooks and Pro Extension
  * Plugin URI: https://ironikus.com/downloads/wp-webhooks-pro/
  * Description: This is an extension example on how you can extend this plugin
  * Version: 1.0
@@ -14,7 +14,7 @@
 
 /*
  * Please note: This plugin is just one possible usage
- * on how you can extend WP Webhooks Pro. You can also set up
+ * on how you can extend WP Webhooks and Pro. You can also set up
  * the plugin by just using WordPress hooks. We just use a class
  * here to show you how it should be implemented in case you want
  * to add multiple webhooks for a better readability.
@@ -67,7 +67,7 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 		 */
 		public function add_webhook_actions_content( $actions ){
 
-			$actions[] = $this->action_delete_user_content();
+			$actions[] = $this->action_demo_action_content();
 
 			return $actions;
 		}
@@ -79,7 +79,7 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 		 * all of the currently activated triggers.
 		 *
 		 * We always send three different properties with the defined wehook.
-		 * @param $action - the defined action defined within the action_delete_user_content function
+		 * @param $action - the defined action defined within the action_demo_action function
 		 * @param $webhook - The webhook itself
 		 * @param $api_key - an api_key if defined
 		 */
@@ -90,13 +90,13 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 			$available_actions = $active_webhooks['actions'];
 
 			switch( $action ){
-				case 'delete_user':
+				case 'demo_action':
 					/*
 					 * We include this isset test to save performance for the whole site.
 					 * It is not a requirement, but we highly suggest it.
 					 */
-					if( isset( $available_actions['delete_user'] ) ){
-						$this->action_delete_user();
+					if( isset( $available_actions['demo_action'] ) ){
+						$this->action_demo_action();
 					}
 					break;
 			}
@@ -126,30 +126,27 @@ if( !class_exists( 'WP_Webhooks_Pro_Extensions' ) ){
 		 * the second parameter is in identifier wher ethe string comes from (you can use
 		 * for example your plugin slug.
 		 */
-		public function action_delete_user_content(){
+		public function action_demo_action_content(){
 
+			//These are the main arguments the user can use to input. You should always grab them within your action function.
 			$parameter = array(
-				'user_id'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(Optional if user_email is defined) Include the numeric id of the user.', 'action-delete-user-content' ) ),
-				'user_email'    => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( '(Optional if user_email is defined) Include the numeric id of the user.', 'action-delete-user-content' ) ),
-				'send_email'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'Set this field to "yes" to send a email to the user that the account got deleted.', 'action-delete-user-content' ) ),
-				'do_action'     => array( 'short_description' => WPWHPRO()->helpers->translate( 'Advanced: Register a custom action after Webhooks Pro fires this webhook. More infos are in the description.', 'action-delete-user-content' ) )
+				'demo_value_1'       => array( 'required' => true, 'short_description' => WPWHPRO()->helpers->translate( 'This value only allows integers. If a string is given, it gets validated within the incoming data.', 'action-demo_action-content' ) ),
+				'demo_value_2'    => array( 'short_description' => WPWHPRO()->helpers->translate( 'This field can contain a string.', 'action-demo_action-content' ) ),
 			);
 
+			//This is a more detailled view of how the data you sent will be returned.
 			$returns = array(
-				'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-delete-user-content' ) ),
-				'data'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(array) User related data as an array. We return the user id with the key "user_id" and the user data with the key "user_data". E.g. array( \'data\' => array(...) )', 'action-delete-user-content' ) ),
-				'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-delete-user-content' ) ),
+				'success'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(Bool) True if the action was successful, false if not. E.g. array( \'success\' => true )', 'action-demo_action-content' ) ),
+				'msg'        => array( 'short_description' => WPWHPRO()->helpers->translate( '(string) A message with more information about the current request. E.g. array( \'msg\' => "This action was successful." )', 'action-create-post-content' ) ),
 			);
 
+			//This area will be displayed within the "return" area of the webhook action
 			ob_start();
 			?>
             <pre>
 $return_args = array(
     'success' => false,
-    'data' => array(
-        'user_id' => 0,
-        'user_data' => array()
-    )
+    'msg' => 'This is a test message'
 );
         </pre>
 			<?php
@@ -158,17 +155,17 @@ $return_args = array(
 			ob_start();
 			?>
                 <p>
-                    <?php echo WPWHPRO()->helpers->translate( 'This is the main description. Here you can add everything the end user needs to know.', 'action-delete-user-content' ); ?>
+                    <?php echo WPWHPRO()->helpers->translate( 'This is the main description. Here you can add everything the end user needs to know.', 'action-demo_action-content' ); ?>
                 </p>
 			<?php
 			$description = ob_get_clean();
 
 			return array(
-				'action'            => 'demo_delete_user', //required
+				'action'            => 'demo_action', //required
 				'parameter'         => $parameter,
 				'returns'           => $returns,
 				'returns_code'      => $returns_code,
-				'short_description' => WPWHPRO()->helpers->translate( 'This is the short description of your webhook action.', 'action-create-user-content' ),
+				'short_description' => WPWHPRO()->helpers->translate( 'This is the short description of your webhook action.', 'action-demo_action-content' ),
 				'description'       => $description
 			);
 
@@ -182,12 +179,11 @@ $return_args = array(
 		 * taking the values defined inside of your $parameters variale
 		 * in the upper function.
 		 *
-		 * The rest depends on your specific logic. As an example,
-		 * I included our whole action_delete_user function.
+		 * The rest depends on your specific logic.
 		 *
 		 * Please don't forget to die() at the end of a function
 		 */
-		function action_delete_user() {
+		function action_demo_action() {
 
 			$response_body = WPWHPRO()->helpers->get_response_body();
 			$return_args = array(
@@ -195,20 +191,30 @@ $return_args = array(
 			);
 
 		    //This is how defined parameters look - you can use the exact same structure and catch the data you need
-			$user_id     = intval( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_id' ) );
-			$user_email  = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'user_email' );
-			$do_action   = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'do_action' );
+			$demo_value_1     = intval( WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'demo_value_1' ) );
+			$demo_value_2     = WPWHPRO()->helpers->validate_request_value( $response_body['content'], 'demo_value_2' );
+
+			//Validate required fields
+			if( empty( $demo_value_1 ) && $demo_value_1 !== 0 && $demo_value_1 !== '0' ){
+
+				$return_args['msg'] = WPWHPRO()->helpers->translate("Please set the demo_value_1 to continue.", 'action-demo_action-failure' );
+
+				WPWHPRO()->webhook->echo_response_data( $return_args );
+				die();
+			}
+
+			ob_start();
+			echo 'First value: ';
+			echo( $demo_value_1 );
+			echo ' Second value: ';
+			echo( $demo_value_2 );
+			$text = ob_get_clean();
 
 			// DO YOUR ACTION HERE...
+			$return_args['msg'] = WPWHPRO()->helpers->translate("You set the following demo values ( encoded with htmlspecialchars() ): ", 'action-demo_action-success' ) . htmlspecialchars( $text );
+			$return_args['success'] = true;
 
-            if( 'this wehook succeeds, ' == 'then do that!' ){
-	            $return_args['msg'] = WPWHPRO()->helpers->translate("User successfully deleted.", 'action-delete-user-success' );
-            } else {
-	            $return_args['msg'] = WPWHPRO()->helpers->translate("Error deleting user.", 'action-delete-user-success' );
-            }
-
-			WPWHPRO()->webhook->echo_json( $return_args );
-
+			WPWHPRO()->webhook->echo_response_data( $return_args );
 			die();
 		}
 
@@ -254,19 +260,19 @@ $return_args = array(
 		public function trigger_create_user_content(){
 
 			$parameter = array(
-				'user_object' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The request will send the full user object as an array. Please see https://codex.wordpress.org/Class_Reference/WP_User for more details.', 'trigger-create-user-content' ) ),
-				'user_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The user meta is also pushed to the user object. You will find it on the first layer of the object as well. ', 'trigger-create-user-content' ) ),
+				'user_object' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The request will send the full user object as an array. Please see https://codex.wordpress.org/Class_Reference/WP_User for more details.', 'trigger-demo_create_user-content' ) ),
+				'user_meta' => array( 'short_description' => WPWHPRO()->helpers->translate( 'The user meta is also pushed to the user object. You will find it on the first layer of the object as well. ', 'trigger-demo_create_user-content' ) ),
 			);
 
 			ob_start();
 			?>
-            <p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-create-user-content" ); ?></p>
-            <p><?php echo WPWHPRO()->helpers->translate( 'You will recieve a full response of the user object, as well as the user meta, so everything you need will be there.', 'trigger-create-user-content' ); ?></p>
-            <p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', 'trigger-create-user-content' ); ?></p>
-            <p><?php echo WPWHPRO()->helpers->translate( 'To check the webhook response on a demo request, just open your browser console and you will see the object.', 'trigger-create-user-content' ); ?></p>
+            <p><?php echo WPWHPRO()->helpers->translate( "Please copy your Webhooks Pro webhook URL into the provided input field. After that you can test your data via the Send demo button.", "trigger-demo_create_user-content" ); ?></p>
+            <p><?php echo WPWHPRO()->helpers->translate( 'You will recieve a full response of the user object, as well as the user meta, so everything you need will be there.', 'trigger-demo_create_user-content' ); ?></p>
+            <p><?php echo WPWHPRO()->helpers->translate( 'You can also filter the demo request by using a custom WordPress filter.', 'trigger-demo_create_user-content' ); ?></p>
+            <p><?php echo WPWHPRO()->helpers->translate( 'To check the webhook response on a demo request, just open your browser console and you will see the object.', 'trigger-demo_create_user-content' ); ?></p>
 			<?php
 			$description = ob_get_clean();
-			
+
 			$settings = array(
 				'load_default_settings' => true,
 				'data' => array(
@@ -278,21 +284,21 @@ $return_args = array(
                             'name_1' => 'Label 1',
                             'name_2' => 'Label 2',
                         ),
-						'label'       => WPWHPRO()->helpers->translate('This is the settings label', 'trigger-create-user-content'),
+						'label'       => WPWHPRO()->helpers->translate('This is the settings label', 'trigger-demo_create_user-content'),
 						'placeholder' => '',
 						'required'    => false,
-						'description' => WPWHPRO()->helpers->translate('Include the description for your single settings item here.', 'trigger-create-user-content-tip')
+						'description' => WPWHPRO()->helpers->translate('Include the description for your single settings item here.', 'trigger-demo_create_user-content-tip')
 					),
 				)
 			);
 
 			return array(
 				'trigger' => 'demo_create_user',
-				'name'  => WPWHPRO()->helpers->translate( 'Demo Send Data On Register', 'trigger-create-user-content' ),
+				'name'  => WPWHPRO()->helpers->translate( 'Demo Send Data On Register', 'trigger-demo_create_user-content' ),
 				'parameter' => $parameter,
 				'settings'          => $settings,
 				'returns_code'      => WPWHPRO()->helpers->display_var( $this->ironikus_send_demo_user_create( array(), '', '' ) ), //Display some response code within the frontend
-				'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user registered.', 'trigger-create-user-content' ),
+				'short_description' => WPWHPRO()->helpers->translate( 'This webhook fires as soon as a user registered.', 'trigger-demo_create_user-content' ),
 				'description' => $description,
 				'callback' => 'test_user_create'
 			);
@@ -341,7 +347,7 @@ $return_args = array(
 	}
 
 	// Make sure we load the extension after main plugin is loaded
-	if( defined( 'WPWHPRO_SETUP' ) ){
+	if( defined( 'WPWHPRO_SETUP' ) || defined( 'WPWH_SETUP' ) ){
 		wpwhpro_load_post_by_email();
 	} else {
 		add_action( 'wpwhpro_plugin_loaded', 'wpwhpro_load_extension' );
