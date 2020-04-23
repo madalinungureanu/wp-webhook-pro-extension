@@ -125,12 +125,30 @@ if( !class_exists( 'WP_Webhooks_Custom_Extension_Triggers' ) ){
         * Register the user register trigger as an element
         */
 		public function ironikus_trigger_user_register( $user_id ){
-			$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'create_user' );
+			$webhooks = WPWHPRO()->webhook->get_hooks( 'trigger', 'demo_create_user' );
 			$user_data = (array) get_user_by( 'id', $user_id );
 			$user_data['user_meta'] = get_user_meta( $user_id );
 
 			foreach( $webhooks as $webhook ){
-				$response_data = WPWHPRO()->webhook->post_to_webhook( $webhook['webhook_url'], $user_data );
+
+				$is_valid = true;
+
+				if( isset( $webhook['settings'] ) ){
+					foreach( $webhook['settings'] as $settings_name => $settings_data ){
+
+						if( $settings_name === 'wpwhpro_post_create_user_on_certain_id_demo' && ! empty( $settings_data ) ){
+							if( ! in_array( 'name_1', $settings_data ) ){ //Test against the custom settings you defined earlier
+								$is_valid = false;
+							}
+						}
+
+					}
+				}
+
+				if( $is_valid ) {
+					$response_data = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+				}
+				
 			}
 
 			do_action( 'wpwhpro/webhooks/trigger_user_register', $user_id, $user_data );
