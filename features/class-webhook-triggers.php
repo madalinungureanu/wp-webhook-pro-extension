@@ -60,10 +60,7 @@ if( !class_exists( 'WP_Webhooks_Custom_Extension_Triggers' ) ){
          */
 		public function add_webhook_triggers() {
 
-			$active_webhooks   = WPWHPRO()->settings->get_active_webhooks();
-			$availale_triggers = $active_webhooks['triggers'];
-
-			if ( isset( $availale_triggers['create_user'] ) ) {
+			if( ! empty( WPWHPRO()->webhook->get_hooks( 'trigger', 'demo_create_user' ) ) ){
 				add_action( 'user_register', array( $this, 'ironikus_trigger_user_register' ), 10, 1 );
 				add_filter( 'ironikus_demo_test_user_create', array( $this, 'ironikus_send_demo_user_create' ), 10, 3 );
 			}
