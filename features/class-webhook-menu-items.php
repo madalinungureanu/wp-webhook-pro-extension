@@ -60,7 +60,7 @@ if( !class_exists( 'WP_Webhooks_Custom_Extension_Menu_Items' ) ){
 
 			switch($tab){
 				case 'demo':
-					echo 'This is some custom text for our very own demo tab.';
+					echo '<div class="wpwh-container">This is some custom text for our very own demo tab.</div>';
 					break;
 			}
 

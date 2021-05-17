@@ -22,6 +22,8 @@ if( !class_exists( 'WP_Webhooks_Custom_Extension_Actions' ) ){
 
 	class WP_Webhooks_Custom_Extension_Actions{
 
+		private $wpwh_use_new_filter = null;
+
 		public function __construct() {
 
 			/*
@@ -31,9 +33,50 @@ if( !class_exists( 'WP_Webhooks_Custom_Extension_Actions' ) ){
 			 * The first one is to hook into all possible and available actions
 			 * and the second one is to register the call you want to set up with it.
 			 */
-			add_action( 'wpwhpro/webhooks/add_webhooks_actions', array( $this, 'add_webhook_actions' ), 20, 3 );
+			if( $this->wpwh_use_new_action_filter() ){
+				add_filter( 'wpwhpro/webhooks/add_webhook_actions', array( $this, 'add_webhook_actions' ), 20, 4 );
+			} else {
+				add_action( 'wpwhpro/webhooks/add_webhooks_actions', array( $this, 'add_webhook_actions' ), 20, 3 );
+			}
 			add_filter( 'wpwhpro/webhooks/get_webhooks_actions', array( $this, 'add_webhook_actions_content' ), 20 );
 
+		}
+
+		/**
+		 * ######################
+		 * ###
+		 * #### HELPERS
+		 * ###
+		 * ######################
+		 */
+
+		public function wpwh_use_new_action_filter(){
+
+			if( $this->wpwh_use_new_filter !== null ){
+				return $this->wpwh_use_new_filter;
+			}
+
+			$return = false;
+			$version_current = '0';
+			$version_needed = '0';
+	
+			if( defined( 'WPWHPRO_VERSION' ) ){
+				$version_current = WPWHPRO_VERSION;
+				$version_needed = '4.1.0';
+			}
+	
+			if( defined( 'WPWH_VERSION' ) ){
+				$version_current = WPWH_VERSION;
+				$version_needed = '3.1.0';
+			}
+	
+			if( version_compare( (string) $version_current, (string) $version_needed, '>=') ){
+				$return = true;
+			}
+
+			$this->wpwh_use_new_filter = $return;
+
+			return $return;
 		}
 
 		/**
@@ -68,19 +111,41 @@ if( !class_exists( 'WP_Webhooks_Custom_Extension_Actions' ) ){
 		 * @param $webhook - The webhook itself
 		 * @param $api_key - an api_key if defined
 		 */
-		public function add_webhook_actions( $action, $webhook, $api_key ){
+		public function add_webhook_actions( $response, $action, $webhook, $api_key = '' ){
 
-			$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
+			//Backwards compatibility prior 4.1.0 (wpwhpro) or 3.1.0 (wpwh)
+			if( ! $this->wpwh_use_new_action_filter() ){
+				$api_key = $webhook;
+				$webhook = $action;
+				$action = $response;
 
-			$available_actions = $active_webhooks['actions'];
+				$active_webhooks = WPWHPRO()->settings->get_active_webhooks();
+				$available_actions = $active_webhooks['actions'];
+
+				if( ! isset( $available_actions[ $action ] ) ){
+					return $response;
+				}
+			}
+
+			$return_data = null;
 
 			switch( $action ){
 				case 'demo_action':
-					if( isset( $available_actions['demo_action'] ) ){
-						$this->action_demo_action();
-					}
+					$return_data = $this->action_demo_action();
 					break;
 			}
+
+			//Make sure we only fire the response in case the old logic is used
+			if( $return_data !== null && ! $this->wpwh_use_new_action_filter() ){
+				WPWHPRO()->webhook->echo_action_data( $return_data );
+				die();
+			}
+
+			if( $return_data !== null ){
+				$response = $return_data;
+			}
+
+			return $response;
 		}
 
 		/*
@@ -164,7 +229,7 @@ $return_args = array(
 		 *
 		 * Please don't forget to die() at the end of a function
 		 */
-		function action_demo_action() {
+		public function action_demo_action() {
 
 			$response_body = WPWHPRO()->helpers->get_response_body();
 			$return_args = array(
@@ -180,8 +245,7 @@ $return_args = array(
 
 				$return_args['msg'] = WPWHPRO()->helpers->translate("Please set the demo_value_1 to continue.", 'action-demo_action-failure' );
 
-				WPWHPRO()->webhook->echo_response_data( $return_args );
-				die();
+				return $return_args;
 			}
 
 			ob_start();
@@ -195,8 +259,7 @@ $return_args = array(
 			$return_args['msg'] = WPWHPRO()->helpers->translate("You set the following demo values ( encoded with htmlspecialchars() ): ", 'action-demo_action-success' ) . htmlspecialchars( $text );
 			$return_args['success'] = true;
 
-			WPWHPRO()->webhook->echo_response_data( $return_args );
-			die();
+			return $return_args;
 		}
 
 	}

@@ -146,12 +146,18 @@ if( !class_exists( 'WP_Webhooks_Custom_Extension_Triggers' ) ){
 				}
 
 				if( $is_valid ) {
-					$response_data = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+					$webhook_url_name = ( is_array($webhook) && isset( $webhook['webhook_url_name'] ) ) ? $webhook['webhook_url_name'] : null;
+
+                    if( $webhook_url_name !== null ){
+                        $response_data[ $webhook_url_name ] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+                    } else {
+                        $response_data[] = WPWHPRO()->webhook->post_to_webhook( $webhook, $user_data );
+                    }
 				}
 				
 			}
 
-			do_action( 'wpwhpro/webhooks/trigger_user_register', $user_id, $user_data );
+			do_action( 'wpwhpro/webhooks/trigger_user_register', $user_id, $user_data, $response_data );
 		}
 
 		/*
