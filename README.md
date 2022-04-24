@@ -1,16 +1,19 @@
 
 # Wp Webhooks & WP Webhooks Pro Extension
-This plugin demonstrates how you can extend both of our plugins WP Webhooks and WP Webbhooks Pro.
+This plugin adds a custom integration to WP Webhooks along with two actions and one trigger and a custom menu page.
 
-It shows you the following things:
-- How to setup a custom action (Recieve Data)
-- How to setup a custom trigger (Send Data)
-- How to create a custom menu item for WP Webhooks/Pro
+It will allow you the following things:
+- Send an event using a custom action within the created integration once a user was updated
+- Send an event once a receivable URL has been called
+- Update the title of a post using a custom action
+- Add a custom menu tab to WP Webhooks (Called "Demo")
 
   
 
-### How is the plugin structured
-In the main file **wp-webhooks-pro-extension.php** incudes all the necessary definitions about the plugin extensions, as well as some code to safely register the functionality in combination with WP Webhooks/Pro.
-Within this file, there are certain **require_once** calls, which include each of the functionalities (We separated them into custom files to make it easier to understand). 
+### How to test the integration
+Once you installed and activated the plugin along with WP Webhooks, you will find the following information:
 
-The code is well documented with all the information you need. In case there are still questions or you found a bug, feel free to reach out to us at any time! 
+- A new menu item tab wihtin WP Webhooks called "Demo"
+- A new action called "Demo update post" within WP Webhooks -> Receive Data
+- A new trigger called "Demo HTTP request received" within WP Webhooks -> Send Data
+- A new trigger called "Demo user updated" within WP Webhooks -> Send Data
